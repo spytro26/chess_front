@@ -11,7 +11,7 @@ export const ChessBoard = ({
   setBoard,
   chance,
   setChance,
-}: {
+} : {
   side: "w" | "b";
   chess: Chess;
   setBoard: React.Dispatch<
@@ -38,10 +38,16 @@ export const ChessBoard = ({
   chance: boolean;
   setChance: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const [from, setFrom] = useState<null | Square>(null);
 
+  const [from, setFrom] = useState<null | Square>(null);
+  const [moves , setMoves] = useState<any>();
+
+
+
+   
   // Handle actual move
   const handleMove = (from: Square, to: Square) => {
+    setMoves(null)
     try {
       socket.send(
         JSON.stringify({
@@ -79,14 +85,24 @@ export const ChessBoard = ({
           }
         }}
         onClick={() => {
+
           if (!from && chance) {
+           setMoves(chess.moves({square : squareRepresentation, verbose : true}));
+
             setFrom(squareRepresentation);
+
           } else if (from && chance) {
             handleMove(from, squareRepresentation);
           }
         }}
       >
         <div className="w-full h-full flex justify-center items-center">
+            {moves?.some((move : any)  => move.to === squareRepresentation) && (
+  <div className="absolute">
+    <div className="bg-yellow-500 rounded-full w-5 h-5"></div>
+  </div>
+)}
+
           {square ? (
             <img
               draggable={chance} // enable drag only if it's user's turn
@@ -102,9 +118,10 @@ export const ChessBoard = ({
                   : `${square.type?.toUpperCase()} copy`
               }.png`}
             />
-          ) : null}
+          ) 
+       : null}
         </div>
-      </div>
+      </div>    
     );
   };
 
