@@ -88,17 +88,45 @@ export const Game = () => {
                         setChance={setChance}
                     />}
                 </div>
+
                 <div className="col-span-2 bg-slate-900 w-full flex justify-center">
                     <div className="pt-8">
                         {!started && <Button onClick={() => {
                             socket.send(JSON.stringify({
                                 type: INIT_GAME
                             }));
-                            setStarted(false)
+                          
 
                         }} >
                             Play
                         </Button>}
+
+
+
+    {winner && (
+        <div className="bg-amber-800 p-6 rounded-xl text-xl text-zinc-50 font-bold mb-4">
+            {winner === side ? "You won the match 🏆" : "You lost the match"}
+        </div>
+    )}
+  
+
+
+                        {/* { started && side == chess.turn() ? (<div> your turn </div>) : (<div> opponent turn </div>)} */}
+                        {!started ? (
+    <div></div>
+) : winner ? ( 
+    null 
+) : side === chess.turn() ? (
+    <div className="bg-green-500 text-2xl rounded-md border border-white px-6 text-zinc-100">
+        Your turn
+    </div>
+) : (
+    <div className="bg-orange-400 text-2xl rounded-md border border-black text-slate-200">
+        Opponent's turn
+    </div>
+)}
+
+
                     </div>
                 </div>
             </div>

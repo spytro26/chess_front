@@ -216,15 +216,7 @@ return ;
     );
   };
 
-  if (winner) {
-  return  (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 text-white">
-      <div className="bg-slate-800 p-6 rounded-xl text-xl font-bold">
-        {winner === side ? "your loosed  " : "you won the match 🏆  "}
-      </div>
-    </div>
-  );
-}
+ 
   // White side
   if (side === "w") {
     return (
