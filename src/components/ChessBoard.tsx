@@ -5,7 +5,7 @@ import { MOVE } from "../screens/Game";
 
 export const ChessBoard = ({
   side,
-  winner , 
+ 
   chess,
   check,
   board,
@@ -19,7 +19,7 @@ export const ChessBoard = ({
   chess: Chess;
   check : any; 
   setCheck : any ; 
-  winner : 'b' | 'w' | null;
+ 
   setBoard: React.Dispatch<
     React.SetStateAction<
       (

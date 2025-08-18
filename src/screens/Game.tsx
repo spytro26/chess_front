@@ -11,7 +11,7 @@ export const GAME_OVER = "game_over";
 
 export const Game = () => {
     const socket = useSocket();
-    const [chess, setChess] = useState(new Chess());
+    const [chess, _setChess] = useState(new Chess());
     const [board, setBoard] = useState(chess.board());
     const [started, setStarted] = useState(false)
     const [side, setside] = useState<"w" | "b">("b");
@@ -81,7 +81,7 @@ export const Game = () => {
                         check = {check}
                         chess={chess} 
                         setBoard={setBoard} 
-                        winner = {winner}
+                      
                         socket={socket} 
                         board={board} 
                         chance={chance}
