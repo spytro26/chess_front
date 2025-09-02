@@ -4,20 +4,42 @@ import { ChessBoard } from "../components/ChessBoard"
 import { useSocket } from "../hooks/useSocket";
 import { Chess } from 'chess.js'
 
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+
 // TODO: Move together, there's code repetition here
 export const INIT_GAME = "init_game";
 export const MOVE = "move";
 export const GAME_OVER = "game_over";
 
 export const Game = () => {
+    const [name , setname] = useState<String | null>('');
+
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is signed in, see docs for a list of available properties
+            // https://firebase.google.com/docs/reference/js/auth.user
+            const uid = user.uid;
+            console.log(user);
+         setname(user.displayName)
+
+            // ...
+        } else {
+            // User is signed out
+            // ...
+            console.log("no user");
+        }
+    });
+
     const socket = useSocket();
     const [chess, _setChess] = useState(new Chess());
     const [board, setBoard] = useState(chess.board());
     const [started, setStarted] = useState(false)
     const [side, setside] = useState<"w" | "b">("b");
     const [chance, setChance] = useState<boolean>(false); // Move state here
-    const [winner , setWinner] = useState<'w' | "b" | null> (null);
-   const [check , setCheck] = useState<boolean> (false);
+    const [winner, setWinner] = useState<'w' | "b" | null>(null);
+    const [check, setCheck] = useState<boolean>(false);
     useEffect(() => {
         if (!socket) {
             return;
@@ -42,26 +64,26 @@ export const Game = () => {
                     setBoard(chess.board());
                     console.log("Move made");
                     setChance(true)
-                     setCheck(chess.inCheck()) 
-                     
+                    setCheck(chess.inCheck())
+
                     break;
                 case GAME_OVER:
                     console.log("Game over");
                     setWinner(message.payload.winner);
                     setChance(false)
                     break;
-                case "promote" : 
-                      console.log("promoting");
-                       setCheck(chess.inCheck()) 
-                     
-                       chess.move({
-                      from: message.payload.from,
-                     to: message.payload.to,
+                case "promote":
+                    console.log("promoting");
+                    setCheck(chess.inCheck())
+
+                    chess.move({
+                        from: message.payload.from,
+                        to: message.payload.to,
                         promotion: message.pawn, // "q" | "r" | "n" | "b"
                     });
                     setBoard(chess.board());
-                      console.log("Move made");
-                       setChance(true);
+                    console.log("Move made");
+                    setChance(true);
 
             }
         }
@@ -73,17 +95,19 @@ export const Game = () => {
 
     return <div className="justify-center flex">
         <div className="pt-8 max-w-screen-lg w-full">
+          
             <div className="grid grid-cols-6 gap-4 w-full">
+                {name} 
                 <div className="col-span-4 w-full flex justify-center">
-                    {started && <ChessBoard 
-                        side={side} 
+                    {started && <ChessBoard
+                        side={side}
                         setCheck={setCheck}
-                        check = {check}
-                        chess={chess} 
-                        setBoard={setBoard} 
-                      
-                        socket={socket} 
-                        board={board} 
+                        check={check}
+                        chess={chess}
+                        setBoard={setBoard}
+
+                        socket={socket}
+                        board={board}
                         chance={chance}
                         setChance={setChance}
                     />}
@@ -95,7 +119,7 @@ export const Game = () => {
                             socket.send(JSON.stringify({
                                 type: INIT_GAME
                             }));
-                          
+
 
                         }} >
                             Play
@@ -103,28 +127,28 @@ export const Game = () => {
 
 
 
-    {winner && (
-        <div className="bg-amber-800 p-6 rounded-xl text-xl text-zinc-50 font-bold mb-4">
-            {winner === side ? "You won the match 🏆" : "You lost the match"}
-        </div>
-    )}
-  
+                        {winner && (
+                            <div className="bg-amber-800 p-6 rounded-xl text-xl text-zinc-50 font-bold mb-4">
+                                {winner === side ? "You won the match 🏆" : "You lost the match"}
+                            </div>
+                        )}
+
 
 
                         {/* { started && side == chess.turn() ? (<div> your turn </div>) : (<div> opponent turn </div>)} */}
                         {!started ? (
-    <div></div>
-) : winner ? ( 
-    null 
-) : side === chess.turn() ? (
-    <div className="bg-green-500 text-2xl rounded-md border border-white px-6 text-zinc-100">
-        Your turn
-    </div>
-) : (
-    <div className="bg-orange-400 text-2xl rounded-md border border-black text-slate-200">
-        Opponent's turn
-    </div>
-)}
+                            <div></div>
+                        ) : winner ? (
+                            null
+                        ) : side === chess.turn() ? (
+                            <div className="bg-green-500 text-2xl rounded-md border border-white px-6 text-zinc-100">
+                                Your turn
+                            </div>
+                        ) : (
+                            <div className="bg-orange-400 text-2xl rounded-md border border-black text-slate-200">
+                                Opponent's turn
+                            </div>
+                        )}
 
 
                     </div>
